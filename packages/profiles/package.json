@@ -8,6 +8,9 @@
   "files": [
     "src"
   ],
+  "exports": {
+    "./fragrance.json": "./src/fragrance.json"
+  },
   "scripts": {
     "test": "echo 'no tests yet for profiles'",
     "typecheck": "echo 'no TS in profiles yet'",
