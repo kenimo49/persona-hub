@@ -50,7 +50,7 @@ See [ARCHITECTURE.md](./ARCHITECTURE.md) for the full design, including the secu
 
 ## Profile packs
 
-- `@persona-hub/profiles/fragrance` — perfume / home fragrance taste (kaoriq.com)
+- `@persona-hub/profiles/fragrance.json` — perfume / home fragrance taste (kaoriq.com)
 - `@persona-hub/profiles/pc` — PC build preferences (mypcrig.com, planned)
 - `@persona-hub/profiles/whisky` — whisky taste profile (legacydram.com, planned)
 

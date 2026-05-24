@@ -1,0 +1,241 @@
+{
+  "schema_version": "1",
+  "profile_id": "fragrance.v1",
+  "profile_version": "1.0.0",
+  "license": "Apache-2.0",
+  "authors": ["ken (kenimo49)"],
+  "metadata": {
+    "framework": "fragrance",
+    "domain": "perfume / home fragrance taste",
+    "language": ["en", "ja"],
+    "evidence_basis": "Type descriptions ground in olfactory adaptation rates and scent-note evaporation behaviour (top / heart / base), not personality archetypes."
+  },
+  "types": [
+    {
+      "id": "citrus",
+      "name": "Citrus",
+      "description": "Tends to prefer fast-evaporating top notes (limonene, linalool). Rapid olfactory adaptation makes these wearers comfortable with frequent re-application and scent layering throughout the day.",
+      "description_ja": "蒸発が早いトップノート（リモネン、リナロール）を好む傾向。嗅覚順応が早く進むため、一日のうちで何度か付け直したり別の香りと重ね付けすることに抵抗が少ない。"
+    },
+    {
+      "id": "woody",
+      "name": "Woody",
+      "description": "Drawn to slow-evaporating base notes (cedarwood, sandalwood, vetiver). Often prefers a single signature scent that develops on the skin over many hours, valuing longevity over variation.",
+      "description_ja": "ゆっくり蒸発するベースノート（シダーウッド、サンダルウッド、ベチバー）に惹かれる。シグネチャー1本を選んで長時間その変化を楽しむタイプが多く、移ろいより持続を重視する。"
+    },
+    {
+      "id": "floral",
+      "name": "Floral",
+      "description": "Resonates with middle (heart) notes that bloom after the top notes fade (rose, jasmine, lily). These notes typically reach peak intensity 15-30 minutes after application, rewarding wearers who notice gradual change.",
+      "description_ja": "トップノートが消えた後に開くミドル（ハート）ノート（ローズ、ジャスミン、リリー）に共鳴する。これらは塗布から15〜30分でピークに達するため、香りのゆるやかな変化に気づける人に向く。"
+    },
+    {
+      "id": "oriental",
+      "name": "Oriental",
+      "description": "Prefers warm, enveloping resins, balsams, and vanilla (often labelled 'amber'). Their higher molecular weight means slower evaporation and stronger sillage, favored by wearers comfortable projecting a deliberate, persistent impression.",
+      "description_ja": "温かく包み込むレジン、バルサム、バニラ（しばしば「アンバー」と総称される）を好む。分子量が大きく蒸発が遅いため強い残り香（シアージュ）を生む。意図的で持続する印象を放つことに抵抗のない人に好まれる。"
+    },
+    {
+      "id": "aquatic",
+      "name": "Aquatic",
+      "description": "Drawn to ozonic and marine accords (calone, helional). These molecules evoke clean, open-air associations and register as low-intensity, making them suitable for shared indoor spaces where stronger scents may overwhelm.",
+      "description_ja": "オゾン系・マリン系の合成香料（カロン、ヘリオナール）に惹かれる。開けた屋外を想起させる軽さがあり、強い香りが避けられがちな屋内・共用空間でも扱いやすい。"
+    },
+    {
+      "id": "green",
+      "name": "Green",
+      "description": "Prefers crushed-leaf, herbal, and tea-like accords (galbanum, violet leaf, tea). These read as crisp and slightly bitter, often associated with morning routines or outdoor activity where a 'fresh-cut' character is desired.",
+      "description_ja": "潰した葉、ハーブ、茶葉の香り（ガルバナム、バイオレットリーフ、ティーノート）を好む。やや苦みのある爽やかさが特徴で、朝のルーティンや屋外活動に「切ったばかり」の鮮度を求める人に多い。"
+    }
+  ],
+  "questions": [
+    {
+      "id": "fq_01",
+      "prompt": "Which first impression of a fragrance pulls you in?",
+      "prompt_ja": "香りの第一印象として惹かれるのはどれ?",
+      "options": [
+        {
+          "id": "a",
+          "label": "A bright, sparkling lift",
+          "label_ja": "弾けるような明るさ",
+          "weights": { "citrus": 2, "aquatic": 1, "woody": 0, "floral": 0, "oriental": 0, "green": 0 }
+        },
+        {
+          "id": "b",
+          "label": "A calm, grounded stillness",
+          "label_ja": "落ち着いた静けさ",
+          "weights": { "woody": 2, "oriental": 1, "citrus": 0, "floral": 0, "aquatic": 0, "green": 0 }
+        },
+        {
+          "id": "c",
+          "label": "A vivid, expressive presence",
+          "label_ja": "華やかな存在感",
+          "weights": { "floral": 2, "oriental": 1, "citrus": 0, "woody": 0, "aquatic": 0, "green": 0 }
+        },
+        {
+          "id": "d",
+          "label": "Something close to nature itself",
+          "label_ja": "自然そのものに近い香り",
+          "weights": { "green": 2, "aquatic": 1, "citrus": 0, "woody": 0, "floral": 0, "oriental": 0 }
+        },
+        {
+          "id": "e",
+          "label": "A warm, enveloping sweetness",
+          "label_ja": "暖かく包まれる甘さ",
+          "weights": { "oriental": 2, "floral": 1, "citrus": 0, "woody": 0, "aquatic": 0, "green": 0 }
+        }
+      ]
+    },
+    {
+      "id": "fq_02",
+      "prompt": "When do you most want to wear a scent?",
+      "prompt_ja": "香りをまといたいシーンは?",
+      "options": [
+        {
+          "id": "a",
+          "label": "First thing in the morning, heading out",
+          "label_ja": "朝、出勤や登校の前",
+          "weights": { "citrus": 2, "green": 1, "woody": 0, "floral": 0, "oriental": 0, "aquatic": 0 }
+        },
+        {
+          "id": "b",
+          "label": "During focused desk or study time",
+          "label_ja": "仕事や勉強で集中したい時間",
+          "weights": { "green": 2, "woody": 1, "citrus": 0, "floral": 0, "oriental": 0, "aquatic": 0 }
+        },
+        {
+          "id": "c",
+          "label": "Unwinding at home in the evening",
+          "label_ja": "夜、家でくつろぐ時間",
+          "weights": { "oriental": 2, "woody": 1, "citrus": 0, "floral": 0, "aquatic": 0, "green": 0 }
+        },
+        {
+          "id": "d",
+          "label": "Meeting someone who matters to me",
+          "label_ja": "大切な人と会うとき",
+          "weights": { "floral": 2, "oriental": 1, "citrus": 0, "woody": 0, "aquatic": 0, "green": 0 }
+        },
+        {
+          "id": "e",
+          "label": "Sports or an active outing",
+          "label_ja": "運動やアクティブな外出",
+          "weights": { "aquatic": 2, "citrus": 1, "woody": 0, "floral": 0, "oriental": 0, "green": 0 }
+        }
+      ]
+    },
+    {
+      "id": "fq_03",
+      "prompt": "How do you want a scent to evolve through the day?",
+      "prompt_ja": "香りの持続と変化への期待は?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Refresh it often, keep it sparkling",
+          "label_ja": "短時間でフレッシュに付け替えたい",
+          "weights": { "citrus": 2, "aquatic": 1, "woody": 0, "floral": 0, "oriental": 0, "green": 0 }
+        },
+        {
+          "id": "b",
+          "label": "Hold steady from morning to night",
+          "label_ja": "朝から夜までずっと残ってほしい",
+          "weights": { "woody": 2, "oriental": 1, "citrus": 0, "floral": 0, "aquatic": 0, "green": 0 }
+        },
+        {
+          "id": "c",
+          "label": "Let body heat deepen it over time",
+          "label_ja": "体温で深まる変化を楽しみたい",
+          "weights": { "floral": 2, "oriental": 1, "citrus": 0, "woody": 0, "aquatic": 0, "green": 0 }
+        },
+        {
+          "id": "d",
+          "label": "Stay consistent across seasons and places",
+          "label_ja": "季節や場所を超えて同じ印象でいたい",
+          "weights": { "woody": 2, "oriental": 1, "citrus": 0, "floral": 0, "aquatic": 0, "green": 0 }
+        },
+        {
+          "id": "e",
+          "label": "Layer light pieces and shift the mood",
+          "label_ja": "軽く重ね付けして気分を変えたい",
+          "weights": { "aquatic": 2, "green": 1, "citrus": 0, "woody": 0, "floral": 0, "oriental": 0 }
+        }
+      ]
+    },
+    {
+      "id": "fq_04",
+      "prompt": "Which scene do you most want a fragrance to call up?",
+      "prompt_ja": "香りに呼び起こしてほしい情景は?",
+      "options": [
+        {
+          "id": "a",
+          "label": "A coastal drive or lakeside walk",
+          "label_ja": "海辺・湖畔の風景",
+          "weights": { "aquatic": 2, "green": 1, "citrus": 0, "woody": 0, "floral": 0, "oriental": 0 }
+        },
+        {
+          "id": "b",
+          "label": "Wet forest floor and moss after rain",
+          "label_ja": "雨上がりの森や苔の匂い",
+          "weights": { "green": 2, "woody": 1, "citrus": 0, "floral": 0, "oriental": 0, "aquatic": 0 }
+        },
+        {
+          "id": "c",
+          "label": "Fireplace or candlelit evening",
+          "label_ja": "暖炉やキャンドルの夜",
+          "weights": { "oriental": 2, "woody": 1, "citrus": 0, "floral": 0, "aquatic": 0, "green": 0 }
+        },
+        {
+          "id": "d",
+          "label": "Walking into a florist's shop",
+          "label_ja": "花屋に入った瞬間の華やかさ",
+          "weights": { "floral": 2, "citrus": 1, "woody": 0, "oriental": 0, "aquatic": 0, "green": 0 }
+        },
+        {
+          "id": "e",
+          "label": "An old bookshop, paper and wooden shelves",
+          "label_ja": "古書店の本と木の棚",
+          "weights": { "woody": 2, "oriental": 1, "citrus": 0, "floral": 0, "aquatic": 0, "green": 0 }
+        }
+      ]
+    },
+    {
+      "id": "fq_05",
+      "prompt": "How do you want a fragrance to behave on your skin?",
+      "prompt_ja": "肌の上で香りにどう振る舞ってほしい?",
+      "options": [
+        {
+          "id": "a",
+          "label": "Bright, fast-fading top notes I can refresh often",
+          "label_ja": "短時間で消えるトップノートを頻繁に付け直したい",
+          "weights": { "citrus": 2, "aquatic": 1, "woody": 0, "floral": 0, "oriental": 0, "green": 0 }
+        },
+        {
+          "id": "b",
+          "label": "A single signature that develops over many hours",
+          "label_ja": "シグネチャー1本が時間をかけて深まる",
+          "weights": { "woody": 2, "oriental": 1, "citrus": 0, "floral": 0, "aquatic": 0, "green": 0 }
+        },
+        {
+          "id": "c",
+          "label": "Heart notes that bloom 15-30 minutes after application",
+          "label_ja": "塗布から15〜30分後に開くハートノートを楽しみたい",
+          "weights": { "floral": 2, "citrus": 1, "woody": 0, "oriental": 0, "aquatic": 0, "green": 0 }
+        },
+        {
+          "id": "d",
+          "label": "Quiet, low-sillage scent that stays close to the skin",
+          "label_ja": "控えめなシアージュで肌の近くに留まる",
+          "weights": { "green": 2, "aquatic": 1, "citrus": 0, "woody": 0, "floral": 0, "oriental": 0 }
+        },
+        {
+          "id": "e",
+          "label": "Strong sillage that fills a room",
+          "label_ja": "強いシアージュで部屋を満たす",
+          "weights": { "oriental": 2, "woody": 1, "citrus": 0, "floral": 0, "aquatic": 0, "green": 0 }
+        }
+      ]
+    }
+  ],
+  "aggregation": {
+    "method": "softmax"
+  }
+}
