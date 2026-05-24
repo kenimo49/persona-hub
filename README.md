@@ -4,7 +4,7 @@
 
 > Lightweight persona evaluation SDK + thin persistence API. Build domain-specific personality quizzes that share a single persona profile across services.
 
-**Status**: Phase 0 — architecture design. Not yet ready for production use.
+**Status**: Pre-alpha — design and scaffold complete; `evaluate()` and API endpoints not yet implemented (see [#3](https://github.com/kenimo49/persona-hub/issues/3), [#5](https://github.com/kenimo49/persona-hub/issues/5)). Not ready for production use.
 
 ## What it looks like
 
@@ -85,7 +85,7 @@ Apache 2.0. The maintainer may offer a managed hosted service in the future; the
 
 ## Development
 
-This is a monorepo with TypeScript packages and a Python API.
+This is a monorepo with **two independent subsystems**: TypeScript packages (the SDK) and a Python API service. They're managed separately — the pnpm workspace covers `packages/*` only, and `apps/api/` has its own Python environment.
 
 ```
 persona-hub/
@@ -96,7 +96,9 @@ persona-hub/
     └── api/              # persistence + aggregation API (FastAPI)
 ```
 
-### TypeScript packages
+You only need to bootstrap the subsystem you're working on:
+
+### TypeScript SDK (packages/)
 
 Requires Node 20+ and pnpm 9+.
 
@@ -106,17 +108,19 @@ pnpm -r typecheck
 pnpm -r test
 ```
 
-### Python API
+### Python API (apps/api/)
 
-Requires Python 3.12+ (uv recommended). See [`apps/api/README.md`](./apps/api/README.md).
+Requires Python 3.12+ (uv recommended). See [`apps/api/README.md`](./apps/api/README.md) for details.
 
 ```bash
 cd apps/api
-uv venv && source .venv/bin/activate
-uv pip install -e ".[dev]"
+uv venv && source .venv/bin/activate    # or: python -m venv .venv && source .venv/bin/activate
+uv pip install -e ".[dev]"              # or: pip install -e ".[dev]"
 pytest
 uvicorn app.main:app --reload
 ```
+
+Working on the SDK doesn't require Python; working on the API doesn't require Node.
 
 ## Status & roadmap
 

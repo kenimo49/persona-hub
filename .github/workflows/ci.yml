@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [main]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ts:
     name: TypeScript packages
@@ -38,6 +42,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version-file: apps/api/.python-version
+          cache: 'pip'
+          cache-dependency-path: apps/api/pyproject.toml
       - name: Install dependencies
         run: pip install -e ".[dev]"
       - name: Lint

@@ -41,4 +41,10 @@ select = ["E", "F", "I", "B", "W"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
+ignore_missing_imports = false
+
+# Per-module overrides for libraries without bundled type stubs.
+# Add entries here only when a dependency genuinely lacks types, not as a blanket escape hatch.
+[[tool.mypy.overrides]]
+module = ["uvicorn.*"]
 ignore_missing_imports = true

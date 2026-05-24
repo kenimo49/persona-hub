@@ -4,7 +4,7 @@
 
 > 軽量なペルソナ評価 SDK と最小限の永続化 API。ドメイン特化型の性格診断クイズを、サービス横断で同じペルソナとして扱うための基盤です。
 
-**ステータス**: Phase 0（アーキテクチャ設計中）。本番運用にはまだ使えません。
+**ステータス**: Pre-alpha — 設計と scaffold は完了、`evaluate()` と API エンドポイントは未実装（[#3](https://github.com/kenimo49/persona-hub/issues/3) / [#5](https://github.com/kenimo49/persona-hub/issues/5)）。本番運用にはまだ使えません。
 
 ## 動くと、こうなります
 
@@ -85,7 +85,7 @@ Apache 2.0 です。将来的にはマネージドのホスティングサービ
 
 ## 開発手順
 
-TypeScript パッケージと Python API を抱える monorepo 構成です。
+**2 つの独立したサブシステム**を抱える monorepo 構成です。TypeScript パッケージ（SDK）と Python API サービスはそれぞれ別管理で、pnpm ワークスペースの対象は `packages/*` のみ、`apps/api/` は自前の Python 環境を持ちます。
 
 ```
 persona-hub/
@@ -96,7 +96,9 @@ persona-hub/
     └── api/              # 永続化 + 集約 API (FastAPI)
 ```
 
-### TypeScript パッケージ
+作業対象のサブシステムだけセットアップすれば動きます。
+
+### TypeScript SDK (packages/)
 
 Node 20+ と pnpm 9+ が必要です。
 
@@ -106,17 +108,19 @@ pnpm -r typecheck
 pnpm -r test
 ```
 
-### Python API
+### Python API (apps/api/)
 
 Python 3.12+（uv 推奨）。詳細は [`apps/api/README.md`](./apps/api/README.md) を参照してください。
 
 ```bash
 cd apps/api
-uv venv && source .venv/bin/activate
-uv pip install -e ".[dev]"
+uv venv && source .venv/bin/activate    # または: python -m venv .venv && source .venv/bin/activate
+uv pip install -e ".[dev]"              # または: pip install -e ".[dev]"
 pytest
 uvicorn app.main:app --reload
 ```
+
+SDK 側を触るだけなら Python は不要、API 側を触るだけなら Node は不要です。
 
 ## ステータスとロードマップ
 
