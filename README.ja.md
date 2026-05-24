@@ -8,7 +8,7 @@
 
 ## 動くと、こうなります
 
-自分のサイトに 5 問程度のクイズを置く。SDK はブラウザでその場で採点する。任意で persona-hub サーバに結果を投げると、同じユーザーが関連サイトに行ったときも同じプロファイルを引き継げる。
+自分のサイトに 5 問程度のクイズを置きます。SDK はブラウザでその場で採点します。任意で persona-hub サーバに結果を POST すると、同じユーザーが関連サイトに来たときも同じプロファイルを引き継げます。
 
 ```ts
 import { evaluate } from '@persona-hub/core'
@@ -25,10 +25,10 @@ const result = evaluate(answers, fragranceProfile)
 
 既存のツールはどれも 1 ピースだけを担います。
 
-- **CDP**（Segment / PostHog / RudderStack）— サービス横断のイベントは集約できるが、クイズの採点はしない
-- **パーソナリティ API**（Crystal Knows / Truity / Big 5 Assessments）— 採点はするが、複数サービス・複数ドメインでプロファイルを共有する仕組みがない
-- **クイズ SaaS**（Outgrow / Typeform / Riddle）— 埋め込みウィジェットは出せるが、各サービスは孤立したまま
-- **フィーチャーフラグ SDK**（LaunchDarkly）— 「SDK + 永続化ストア」のアーキは正しいが、ドメインがフラグであってペルソナではない
+- **CDP**（Segment / PostHog / RudderStack）— サービス横断のイベントは集約できますが、クイズの採点はできません
+- **パーソナリティ API**（Crystal Knows / Truity / Big 5 Assessments）— 採点はできますが、複数サービス・複数ドメインでプロファイルを共有する仕組みがありません
+- **クイズ SaaS**（Outgrow / Typeform / Riddle）— 埋め込みウィジェットは出せますが、各サービスは孤立したままです
+- **フィーチャーフラグ SDK**（LaunchDarkly）— 「SDK + 永続化ストア」のアーキは正しいものの、ドメインがフラグであってペルソナではありません
 
 persona-hub はこの 3 つのパターンを統合します。クライアント SDK でドメイン特化のクイズ評価をやり、任意で薄い API に投げてサービス横断のペルソナ集約までを担います。
 
