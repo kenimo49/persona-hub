@@ -3,21 +3,15 @@
 from datetime import UTC, datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi import APIRouter, Depends, Header, status
 from sqlalchemy.orm import Session
 
-from app.aggregate import (
-    BIGFIVE_PROFILE_ID,
-    BIGFIVE_SCORING_VERSION,
-    BigFiveResult,
-    score_bigfive,
-)
-from app.aggregate.bigfive import coerce_result as _coerce_bigfive
+from app.aggregate import BIGFIVE_SCORING_VERSION, compute_bigfive_estimate
 from app.config import get_settings
 from app.db import get_db
 from app.deps import get_api_key, grant_access, require_persona_access
 from app.ids import new_ulid
-from app.models import HandoffJti, Persona, Signal, SourceApiKey
+from app.models import HandoffJti, Persona, SourceApiKey
 from app.schemas import (
     AggregateOut,
     HandoffTokenOut,
@@ -27,30 +21,14 @@ from app.schemas import (
     SignalOut,
 )
 from app.security import encode_handoff_token
+from app.signals_builder import build_signal
+from app.validators import (
+    check_profile_whitelist,
+    check_source_matches_key,
+    get_persona_or_404,
+)
 
 router = APIRouter()
-
-
-def _check_profile_whitelist(api_key: SourceApiKey, profile_id: str) -> None:
-    """Enforce ``allowed_profile_ids`` if the key has a non-empty whitelist."""
-    if api_key.allowed_profile_ids and profile_id not in api_key.allowed_profile_ids:
-        raise HTTPException(
-            status.HTTP_403_FORBIDDEN,
-            f"API key not allowed to write profile_id={profile_id}",
-        )
-
-
-def _check_source_matches_key(api_key: SourceApiKey, source: str) -> None:
-    """Bind the client-supplied ``source`` field to the authenticated API key.
-
-    Without this check a holder of one key could attribute writes to a sibling
-    service ("spoof writes as a legitimate source service" in the threat model).
-    """
-    if source != api_key.name:
-        raise HTTPException(
-            status.HTTP_400_BAD_REQUEST,
-            f"source must match the authenticated API key (expected {api_key.name!r})",
-        )
 
 
 @router.post(
@@ -64,8 +42,8 @@ def create_persona(
     api_key: Annotated[SourceApiKey, Depends(get_api_key)],
 ) -> PersonaCreated:
     """Create a persona and persist its first signal in one transaction."""
-    _check_source_matches_key(api_key, body.source)
-    _check_profile_whitelist(api_key, body.profile_id)
+    check_source_matches_key(api_key, body.source)
+    check_profile_whitelist(api_key, body.profile_id)
     now = datetime.now(UTC)
     persona = Persona(
         id=new_ulid(),
@@ -73,20 +51,7 @@ def create_persona(
         created_by_api_key_id=api_key.id,
     )
     db.add(persona)
-    db.add(
-        Signal(
-            id=new_ulid(),
-            persona_id=persona.id,
-            source=body.source,
-            profile_id=body.profile_id,
-            profile_version=body.profile_version,
-            scoring_version=body.scoring_version,
-            result=body.result,
-            answers=body.answers,
-            created_by_api_key_id=api_key.id,
-            created_at=now,
-        )
-    )
+    db.add(build_signal(body=body, persona_id=persona.id, api_key_id=api_key.id, now=now))
     grant_access(db, persona.id, api_key.id, via="creator")
     db.commit()
     return PersonaCreated(persona_id=persona.id)
@@ -99,9 +64,7 @@ def get_persona(
     api_key: Annotated[SourceApiKey, Depends(get_api_key)],
     authorization: Annotated[str | None, Header()] = None,
 ) -> PersonaOut:
-    persona = db.get(Persona, persona_id)
-    if persona is None:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Persona not found")
+    persona = get_persona_or_404(db, persona_id)
     require_persona_access(persona_id, db, api_key, authorization)
     db.commit()
     return PersonaOut(
@@ -134,13 +97,11 @@ def get_aggregate(
     follow-up issue. They are still counted as ``source_signals`` so
     consumers can see they exist.
     """
-    persona = db.get(Persona, persona_id)
-    if persona is None:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Persona not found")
+    persona = get_persona_or_404(db, persona_id)
     require_persona_access(persona_id, db, api_key, authorization)
     db.commit()
 
-    big_five, contributing_id = _compute_bigfive_estimate(persona.signals)
+    big_five, contributing_id = compute_bigfive_estimate(persona.signals)
     source_signals = [contributing_id] if contributing_id is not None else []
     has_estimate = big_five is not None
     return AggregateOut(
@@ -150,28 +111,6 @@ def get_aggregate(
         scoring_version=BIGFIVE_SCORING_VERSION if has_estimate else None,
         placeholder=not has_estimate,
     )
-
-
-def _compute_bigfive_estimate(
-    signals: list[Signal],
-) -> tuple[BigFiveResult | None, str | None]:
-    """Find the most recent ``bigfive.v1`` signal and produce a 0-100 OCEAN estimate.
-
-    Returns ``(estimate, contributing_signal_id)`` or ``(None, None)`` if no
-    usable signal is available.
-    """
-    bigfive_signals = [s for s in signals if s.profile_id == BIGFIVE_PROFILE_ID]
-    if not bigfive_signals:
-        return None, None
-    latest = max(bigfive_signals, key=lambda s: s.created_at)
-
-    if latest.answers is not None:
-        return score_bigfive(latest.answers), latest.id
-
-    coerced = _coerce_bigfive(latest.result)
-    if coerced is not None:
-        return coerced, latest.id
-    return None, None
 
 
 @router.post(
@@ -190,9 +129,7 @@ def issue_handoff_token(
     The receiving service exchanges this token by sending it as
     ``Authorization: Bearer ...`` on a subsequent request to any persona endpoint.
     """
-    persona = db.get(Persona, persona_id)
-    if persona is None:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Persona not found")
+    get_persona_or_404(db, persona_id)
     require_persona_access(persona_id, db, api_key, authorization=None)
 
     jti = new_ulid()

@@ -1,4 +1,4 @@
-import type { Answers, EvalResult, ProfileSpec } from './types.js'
+import type { Answers, EvalResult, OptionSpec, ProfileSpec } from './types.js'
 
 export const SCORING_VERSION = '0.1.0'
 
@@ -26,25 +26,40 @@ function validateProfileSpec(spec: unknown): asserts spec is ProfileSpec {
   if (!Array.isArray(spec.types) || spec.types.length === 0) {
     throw new TypeError('types must be a non-empty array')
   }
+  const typeIds = new Set<string>()
   for (const t of spec.types) {
     if (!isPlainObject(t) || typeof t.id !== 'string' || typeof t.name !== 'string') {
       throw new TypeError('each type must have string id and name')
     }
+    if (typeIds.has(t.id)) {
+      throw new TypeError(`duplicate type id "${t.id}"`)
+    }
+    typeIds.add(t.id)
   }
   if (!Array.isArray(spec.questions) || spec.questions.length === 0) {
     throw new TypeError('questions must be a non-empty array')
   }
+  const questionIds = new Set<string>()
   for (const q of spec.questions) {
     if (!isPlainObject(q) || typeof q.id !== 'string' || typeof q.prompt !== 'string') {
       throw new TypeError('each question must have string id and prompt')
     }
+    if (questionIds.has(q.id)) {
+      throw new TypeError(`duplicate question id "${q.id}"`)
+    }
+    questionIds.add(q.id)
     if (!Array.isArray(q.options) || q.options.length === 0) {
       throw new TypeError(`question "${q.id}" must have a non-empty options array`)
     }
+    const optionIds = new Set<string>()
     for (const opt of q.options) {
       if (!isPlainObject(opt) || typeof opt.id !== 'string' || typeof opt.label !== 'string') {
         throw new TypeError(`each option in question "${q.id}" must have string id and label`)
       }
+      if (optionIds.has(opt.id)) {
+        throw new TypeError(`duplicate option id "${opt.id}" in question "${q.id}"`)
+      }
+      optionIds.add(opt.id)
       if (!isPlainObject(opt.weights)) {
         throw new TypeError(`option "${opt.id}" must have a weights object`)
       }
@@ -75,19 +90,62 @@ function assertWeightTypeIdsExist(spec: ProfileSpec): void {
   }
 }
 
+/** Per-spec index: question id → (option id → option), built once and cached.
+ *
+ * Avoids the `O(questions * options)` linear scans that `Array.prototype.find`
+ * would do on every evaluate() call. The cache is keyed by the spec object
+ * itself via WeakMap.
+ *
+ * Cache safety: `evaluate()` treats `spec` as immutable. Profile packs are
+ * loaded from JSON and not mutated between calls in any normal usage. If a
+ * caller mutates `spec.questions` or any nested option array in place, the
+ * cached index will not reflect the change — pass a freshly constructed spec
+ * object instead. `validateProfileSpec` enforces that `type.id`, `question.id`,
+ * and `option.id` within a question are unique, so the cached index can never
+ * silently lose entries to last-write-wins overwrites.
+ */
+const SPEC_INDEX_CACHE = new WeakMap<ProfileSpec, Map<string, Map<string, OptionSpec>>>()
+
+function buildSpecIndex(spec: ProfileSpec): Map<string, Map<string, OptionSpec>> {
+  const cached = SPEC_INDEX_CACHE.get(spec)
+  if (cached !== undefined) return cached
+  const index = new Map<string, Map<string, OptionSpec>>()
+  for (const q of spec.questions) {
+    const optionMap = new Map<string, OptionSpec>()
+    for (const opt of q.options) optionMap.set(opt.id, opt)
+    index.set(q.id, optionMap)
+  }
+  SPEC_INDEX_CACHE.set(spec, index)
+  return index
+}
+
 function accumulateRawScores(answers: Answers, spec: ProfileSpec): Record<string, number> {
   const scores: Record<string, number> = {}
   for (const t of spec.types) {
     scores[t.id] = 0
   }
+  const specIndex = buildSpecIndex(spec)
+  const missing: string[] = []
   for (const q of spec.questions) {
-    const selectedOptionId = answers[q.id]
-    if (selectedOptionId === undefined) {
-      throw new Error(`Missing answer for question "${q.id}"`)
-    }
-    const option = q.options.find((o) => o.id === selectedOptionId)
+    if (answers[q.id] === undefined) missing.push(q.id)
+  }
+  if (missing.length > 0) {
+    const expected = spec.questions.map((q) => q.id).join(', ')
+    throw new Error(
+      `Missing answers for question(s): ${missing.join(', ')}. ` +
+        `Expected one entry per question id: ${expected}.`
+    )
+  }
+  for (const q of spec.questions) {
+    const selectedOptionId = answers[q.id]!
+    const optionMap = specIndex.get(q.id)!
+    const option = optionMap.get(selectedOptionId)
     if (option === undefined) {
-      throw new Error(`Unknown option "${selectedOptionId}" for question "${q.id}"`)
+      const validOptions = Array.from(optionMap.keys()).join(', ')
+      throw new Error(
+        `Unknown option "${selectedOptionId}" for question "${q.id}". ` +
+          `Valid options: ${validOptions}.`
+      )
     }
     for (const [typeId, weight] of Object.entries(option.weights)) {
       scores[typeId] = (scores[typeId] ?? 0) + weight
@@ -156,7 +214,9 @@ function aggregate(rawScores: Record<string, number>, method: AggregationMethod)
  * Evaluate a user's answers against a profile spec.
  *
  * Pure, deterministic. Validates the spec and cross-references at runtime;
- * throws on missing answers or unknown options.
+ * throws on missing answers or unknown options. The first call against a
+ * given spec object builds a one-time index of `(question, option) → option`
+ * which is cached for subsequent calls via WeakMap.
  *
  * @param answers - questionId -> optionId
  * @param spec - the profile pack (validated at runtime)

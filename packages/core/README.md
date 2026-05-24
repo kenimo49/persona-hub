@@ -6,11 +6,17 @@ Pure evaluation engine for [persona-hub](https://github.com/kenimo49/persona-hub
 
 ## Install
 
-_Not yet published to npm._
+### From npm (planned)
+
+`@persona-hub/core` is not yet published to npm. Once it is:
 
 ```bash
 pnpm add @persona-hub/core
 ```
+
+### From this workspace (today)
+
+This package is part of the persona-hub monorepo. To use it from another workspace package, depend on it as `"@persona-hub/core": "workspace:*"` and let pnpm link the local source.
 
 ## Usage
 

@@ -29,9 +29,8 @@ describe('fragrance.v1 profile pack — spec shape', () => {
     for (const t of FRAGRANCE_SPEC.types) {
       expect(typeof t.description).toBe('string')
       expect((t.description ?? '').length).toBeGreaterThan(0)
-      const descJa = (t as { description_ja?: unknown }).description_ja
-      expect(typeof descJa).toBe('string')
-      expect((descJa as string).length).toBeGreaterThan(0)
+      expect(typeof t.description_ja).toBe('string')
+      expect((t.description_ja ?? '').length).toBeGreaterThan(0)
     }
   })
 

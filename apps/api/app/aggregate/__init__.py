@@ -12,15 +12,19 @@ from app.aggregate.bigfive import (
     BIGFIVE_SCORING_VERSION,
     BIGFIVE_TRAITS,
     BigFiveResult,
+    Trait,
     is_bigfive_result_shape,
     score_bigfive,
 )
+from app.aggregate.service import compute_bigfive_estimate
 
 __all__ = [
     "BIGFIVE_PROFILE_ID",
     "BIGFIVE_SCORING_VERSION",
     "BIGFIVE_TRAITS",
     "BigFiveResult",
+    "Trait",
+    "compute_bigfive_estimate",
     "is_bigfive_result_shape",
     "score_bigfive",
 ]

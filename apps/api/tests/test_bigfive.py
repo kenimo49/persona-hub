@@ -7,7 +7,7 @@ from app.aggregate.bigfive import coerce_result, is_bigfive_result_shape
 def test_score_bigfive_no_answers_returns_neutral() -> None:
     result = score_bigfive({})
     for trait in BIGFIVE_TRAITS:
-        assert result[trait] == 50  # type: ignore[literal-required]
+        assert result[trait] == 50
 
 
 def test_score_bigfive_max_positive_items_yields_100() -> None:
@@ -59,14 +59,14 @@ def test_score_bigfive_ignores_malformed_entries() -> None:
     bad = {"bf_q01": "not a number", 42: 5}
     result = score_bigfive(bad)
     for trait in BIGFIVE_TRAITS:
-        assert result[trait] == 50  # type: ignore[literal-required]
+        assert result[trait] == 50
 
 
 def test_score_bigfive_ignores_unknown_input_types() -> None:
     """Non-dict, non-list inputs must not crash; return neutral."""
     result = score_bigfive(42)
     for trait in BIGFIVE_TRAITS:
-        assert result[trait] == 50  # type: ignore[literal-required]
+        assert result[trait] == 50
 
 
 def test_is_bigfive_result_shape_accepts_full_dict() -> None:
@@ -175,7 +175,7 @@ def test_score_bigfive_rejects_nan_and_inf() -> None:
         }
     )
     for trait in BIGFIVE_TRAITS:
-        assert result[trait] == 50  # type: ignore[literal-required]
+        assert result[trait] == 50
 
 
 def test_coerce_result_rejects_nan_and_inf() -> None:

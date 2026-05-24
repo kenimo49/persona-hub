@@ -22,7 +22,7 @@ import math
 from decimal import ROUND_HALF_UP, Decimal
 from functools import lru_cache
 from importlib import resources
-from typing import Any, TypedDict, cast
+from typing import Any, Literal, TypedDict, cast, get_args
 
 
 def _round_half_up(value: float) -> int:
@@ -39,13 +39,15 @@ def _round_half_up(value: float) -> int:
 BIGFIVE_PROFILE_ID = "bigfive.v1"
 BIGFIVE_SCORING_VERSION = "bigfive-0.1.0"
 
-BIGFIVE_TRAITS: tuple[str, ...] = (
+Trait = Literal[
     "openness",
     "conscientiousness",
     "extraversion",
     "agreeableness",
     "neuroticism",
-)
+]
+
+BIGFIVE_TRAITS: tuple[Trait, ...] = get_args(Trait)
 
 
 class BigFiveResult(TypedDict):
@@ -57,20 +59,34 @@ class BigFiveResult(TypedDict):
 
 
 class _QuestionMeta(TypedDict):
-    trait: str
+    trait: Trait
     reverse: bool
+
+
+_VALID_TRAITS: frozenset[str] = frozenset(BIGFIVE_TRAITS)
 
 
 @lru_cache(maxsize=1)
 def _question_bank() -> dict[str, _QuestionMeta]:
-    """Read the bundled BigFive question bank once and index it by question id."""
+    """Read the bundled BigFive question bank once and index it by question id.
+
+    Items whose ``trait`` is not one of the five canonical OCEAN traits are
+    skipped — a slightly defensive guard so a malformed bank can't corrupt
+    typing at runtime.
+    """
     raw_text = (resources.files("app.aggregate") / "data" / "bigfive_questions.json").read_text(
         encoding="utf-8"
     )
     raw = json.loads(raw_text)
     bank: dict[str, _QuestionMeta] = {}
     for q in raw["questions"]:
-        bank[q["id"]] = _QuestionMeta(trait=q["trait"], reverse=bool(q.get("reverse", False)))
+        trait = q["trait"]
+        if trait not in _VALID_TRAITS:
+            continue
+        bank[q["id"]] = _QuestionMeta(
+            trait=cast(Trait, trait),
+            reverse=bool(q.get("reverse", False)),
+        )
     return bank
 
 
@@ -149,12 +165,10 @@ def score_bigfive(answers: object) -> BigFiveResult:
     bank = _question_bank()
     normalized = _normalize_answers(answers)
 
-    trait_scores: dict[str, list[float]] = {t: [] for t in BIGFIVE_TRAITS}
+    trait_scores: dict[Trait, list[float]] = {t: [] for t in BIGFIVE_TRAITS}
     for qid, score in normalized.items():
         meta = bank.get(qid)
         if meta is None:
-            continue
-        if meta["trait"] not in trait_scores:
             continue
         clipped = max(1, min(5, score))
         effective = (6 - clipped) if meta["reverse"] else clipped
@@ -165,7 +179,7 @@ def score_bigfive(answers: object) -> BigFiveResult:
         scores = trait_scores[trait]
         if scores:
             mean = sum(scores) / len(scores)
-            result[trait] = _round_half_up((mean - 1) * 25)  # type: ignore[literal-required]
+            result[trait] = _round_half_up((mean - 1) * 25)
     return result
 
 

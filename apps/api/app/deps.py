@@ -1,11 +1,11 @@
 """FastAPI dependencies: authentication and persona access checks."""
 
 from datetime import UTC, datetime
-from typing import Annotated
+from typing import Annotated, Any, cast
 
 import jwt
 from fastapi import Depends, Header, HTTPException, status
-from sqlalchemy import select, update
+from sqlalchemy import CursorResult, select, update
 from sqlalchemy.orm import Session
 
 from app.db import get_db
@@ -113,17 +113,20 @@ def require_persona_access(
     # when the token has not been consumed yet. Two concurrent requests cannot
     # both succeed because the second one's WHERE clause will match zero rows.
     now = datetime.now(UTC)
-    result = db.execute(
-        update(HandoffJti)
-        .where(
-            HandoffJti.jti == claims["jti"],
-            HandoffJti.consumed_at.is_(None),
-        )
-        .values(consumed_at=now, consumed_by_api_key_id=api_key.id)
+    # ``Session.execute(update(...))`` returns a ``CursorResult`` at runtime,
+    # but the inferred type is the generic ``Result``. Narrow it once so
+    # ``rowcount`` access is statically typed without a per-call ignore.
+    cursor = cast(
+        CursorResult[Any],
+        db.execute(
+            update(HandoffJti)
+            .where(
+                HandoffJti.jti == claims["jti"],
+                HandoffJti.consumed_at.is_(None),
+            )
+            .values(consumed_at=now, consumed_by_api_key_id=api_key.id)
+        ),
     )
-    # ``rowcount`` is exposed on the underlying CursorResult that
-    # ``Session.execute(update(...))`` returns, but the static return type is
-    # the generic ``Result``.
-    if result.rowcount == 0:  # type: ignore[attr-defined]
+    if cursor.rowcount == 0:
         raise HTTPException(status.HTTP_403_FORBIDDEN, "Handoff token already consumed")
     grant_access(db, persona_id, api_key.id, via="handoff_token")
