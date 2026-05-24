@@ -51,13 +51,18 @@ class HandoffTokenOut(BaseModel):
 class AggregateOut(BaseModel):
     """Aggregated cross-source persona estimate.
 
-    The aggregation engine ships in Issue #7; for now this endpoint returns
-    a deterministic placeholder so consumers can wire up the call site.
+    ``placeholder`` is ``True`` only when no contributing signals were found.
+    ``scoring_version`` identifies the aggregation engine that produced the
+    estimate so downstream consumers can detect logic changes.
+    ``source_signals`` records the signal ids that contributed, for audit
+    and debugging.
     """
 
     persona_id: str
-    big_five_estimate: dict[str, float] | None = None
+    big_five_estimate: dict[str, int] | None = None
     summary: str | None = None
+    source_signals: list[str] = Field(default_factory=list)
+    scoring_version: str | None = None
     placeholder: bool = True
 
 

@@ -6,6 +6,13 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Header, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.aggregate import (
+    BIGFIVE_PROFILE_ID,
+    BIGFIVE_SCORING_VERSION,
+    BigFiveResult,
+    score_bigfive,
+)
+from app.aggregate.bigfive import coerce_result as _coerce_bigfive
 from app.config import get_settings
 from app.db import get_db
 from app.deps import get_api_key, grant_access, require_persona_access
@@ -111,16 +118,60 @@ def get_aggregate(
     api_key: Annotated[SourceApiKey, Depends(get_api_key)],
     authorization: Annotated[str | None, Header()] = None,
 ) -> AggregateOut:
-    """Return aggregated cross-source estimate.
+    """Return an aggregated cross-source estimate for ``persona_id``.
 
-    Placeholder until Issue #7 ports the 5-framework scoring engine.
+    The MVP aggregation engine recognizes the ``bigfive.v1`` framework profile.
+    When the persona has one or more ``bigfive.v1`` signals, the most recent
+    one is used to populate ``big_five_estimate``:
+
+      - If the signal carries ``answers``, the server re-scores using the
+        bundled question bank for integrity.
+      - Otherwise the signal's pre-evaluated ``result`` is used, after a
+        shape check.
+
+    Domain-typed signals (e.g. ``fragrance.v1``, ``pc.v1``) are not yet
+    translated into framework estimates — that translation layer is a
+    follow-up issue. They are still counted as ``source_signals`` so
+    consumers can see they exist.
     """
     persona = db.get(Persona, persona_id)
     if persona is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Persona not found")
     require_persona_access(persona_id, db, api_key, authorization)
     db.commit()
-    return AggregateOut(persona_id=persona.id, placeholder=True)
+
+    big_five, contributing_id = _compute_bigfive_estimate(persona.signals)
+    source_signals = [contributing_id] if contributing_id is not None else []
+    has_estimate = big_five is not None
+    return AggregateOut(
+        persona_id=persona.id,
+        big_five_estimate=dict(big_five) if big_five is not None else None,
+        source_signals=source_signals,
+        scoring_version=BIGFIVE_SCORING_VERSION if has_estimate else None,
+        placeholder=not has_estimate,
+    )
+
+
+def _compute_bigfive_estimate(
+    signals: list[Signal],
+) -> tuple[BigFiveResult | None, str | None]:
+    """Find the most recent ``bigfive.v1`` signal and produce a 0-100 OCEAN estimate.
+
+    Returns ``(estimate, contributing_signal_id)`` or ``(None, None)`` if no
+    usable signal is available.
+    """
+    bigfive_signals = [s for s in signals if s.profile_id == BIGFIVE_PROFILE_ID]
+    if not bigfive_signals:
+        return None, None
+    latest = max(bigfive_signals, key=lambda s: s.created_at)
+
+    if latest.answers is not None:
+        return score_bigfive(latest.answers), latest.id
+
+    coerced = _coerce_bigfive(latest.result)
+    if coerced is not None:
+        return coerced, latest.id
+    return None, None
 
 
 @router.post(
