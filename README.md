@@ -1,5 +1,7 @@
 # persona-hub
 
+**English** · [日本語](./README.ja.md)
+
 > Lightweight persona evaluation SDK + thin persistence API. Build domain-specific personality quizzes that share a single persona profile across services.
 
 **Status**: Phase 0 — architecture design. Not yet ready for production use.
