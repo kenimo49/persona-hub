@@ -2,7 +2,7 @@
 
 Pure evaluation engine for [persona-hub](https://github.com/kenimo49/persona-hub). Takes user `answers` and a `ProfileSpec`, returns an `EvalResult`.
 
-**Status**: scaffold only. Real scoring lands in [Issue #3](https://github.com/kenimo49/persona-hub/issues/3).
+**Status**: MVP — `evaluate()` implemented with argmax and softmax aggregation. `threshold` method is not yet supported.
 
 ## Install
 
