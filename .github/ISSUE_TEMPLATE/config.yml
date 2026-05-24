@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security report (private)
+    url: https://github.com/kenimo49/persona-hub/security/advisories/new
+    about: For security vulnerabilities, please use GitHub's private vulnerability reporting instead of a public Issue.
+  - name: Architecture & design discussion
+    url: https://github.com/kenimo49/persona-hub/issues/1
+    about: For broader architecture or design conversations, comment on the architecture Issue.
