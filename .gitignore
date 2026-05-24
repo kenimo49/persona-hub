@@ -21,3 +21,9 @@ venv/
 
 coverage/
 *.lcov
+.coverage
+
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
