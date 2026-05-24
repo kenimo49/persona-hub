@@ -1,0 +1,552 @@
+{
+  "schema_version": "1",
+  "profile_id": "bigfive.v1",
+  "profile_version": "1.0.0",
+  "framework": "bigfive",
+  "license": "Apache-2.0",
+  "authors": [
+    "ken (kenimo49)"
+  ],
+  "license_note": "Items were authored by the maintainer in the private persona-manager repo and are re-licensed Apache-2.0 here.",
+  "language": "ja",
+  "metadata": {
+    "total_questions": 30,
+    "framework": "bigfive",
+    "scoring_method": "trait_scoring",
+    "traits": [
+      {
+        "id": "openness",
+        "label": "開放性 (Openness)"
+      },
+      {
+        "id": "conscientiousness",
+        "label": "誠実性 (Conscientiousness)"
+      },
+      {
+        "id": "extraversion",
+        "label": "外向性 (Extraversion)"
+      },
+      {
+        "id": "agreeableness",
+        "label": "協調性 (Agreeableness)"
+      },
+      {
+        "id": "neuroticism",
+        "label": "神経症的傾向 (Neuroticism)"
+      }
+    ],
+    "version": "1.0"
+  },
+  "questions": [
+    {
+      "id": "bf_q01",
+      "text_ja": "新しいアイデアや経験を積極的に求める",
+      "trait": "openness",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q02",
+      "text_ja": "芸術や美しいものに心を動かされることが多い",
+      "trait": "openness",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q03",
+      "text_ja": "想像力が豊かで、空想にふけることがある",
+      "trait": "openness",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q04",
+      "text_ja": "知的な議論や哲学的な話題に興味がある",
+      "trait": "openness",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q05",
+      "text_ja": "慣れ親しんだやり方を変えることに抵抗を感じる",
+      "trait": "openness",
+      "reverse": true,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q06",
+      "text_ja": "抽象的な概念よりも具体的で実用的なことに関心がある",
+      "trait": "openness",
+      "reverse": true,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q07",
+      "text_ja": "計画を立ててから行動することが多い",
+      "trait": "conscientiousness",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q08",
+      "text_ja": "任された仕事は最後まで責任を持ってやり遂げる",
+      "trait": "conscientiousness",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q09",
+      "text_ja": "整理整頓を心がけ、物事を秩序立てて進める",
+      "trait": "conscientiousness",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q10",
+      "text_ja": "目標を設定し、それに向かって努力を続けることができる",
+      "trait": "conscientiousness",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q11",
+      "text_ja": "締め切りに遅れることがよくある",
+      "trait": "conscientiousness",
+      "reverse": true,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q12",
+      "text_ja": "つい先延ばしにしてしまうことが多い",
+      "trait": "conscientiousness",
+      "reverse": true,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q13",
+      "text_ja": "人と話すことでエネルギーを得られる",
+      "trait": "extraversion",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q14",
+      "text_ja": "社交的な場ではリーダーシップを取ることが多い",
+      "trait": "extraversion",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q15",
+      "text_ja": "初対面の人とでも気軽に会話を始められる",
+      "trait": "extraversion",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q16",
+      "text_ja": "活気のある環境にいると気分が上がる",
+      "trait": "extraversion",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q17",
+      "text_ja": "大勢の人がいる場所では疲れを感じやすい",
+      "trait": "extraversion",
+      "reverse": true,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q18",
+      "text_ja": "一人で過ごす時間の方がリラックスできる",
+      "trait": "extraversion",
+      "reverse": true,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q19",
+      "text_ja": "他人の気持ちに共感しやすい方だ",
+      "trait": "agreeableness",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q20",
+      "text_ja": "困っている人がいたら進んで手助けをする",
+      "trait": "agreeableness",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q21",
+      "text_ja": "人を信頼し、良い面を見るようにしている",
+      "trait": "agreeableness",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q22",
+      "text_ja": "チームの和を大切にし、協力して物事を進めたい",
+      "trait": "agreeableness",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q23",
+      "text_ja": "自分の利益を優先して行動することが多い",
+      "trait": "agreeableness",
+      "reverse": true,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q24",
+      "text_ja": "他人の意見に対して批判的になりやすい",
+      "trait": "agreeableness",
+      "reverse": true,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q25",
+      "text_ja": "ストレスを感じやすく、不安になることが多い",
+      "trait": "neuroticism",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q26",
+      "text_ja": "気分の浮き沈みが激しい方だ",
+      "trait": "neuroticism",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q27",
+      "text_ja": "些細なことでも心配してしまうことがある",
+      "trait": "neuroticism",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q28",
+      "text_ja": "批判されると深く落ち込むことがある",
+      "trait": "neuroticism",
+      "reverse": false,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q29",
+      "text_ja": "プレッシャーがかかる場面でも冷静でいられる",
+      "trait": "neuroticism",
+      "reverse": true,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    },
+    {
+      "id": "bf_q30",
+      "text_ja": "感情的に安定していて、あまり動揺しない",
+      "trait": "neuroticism",
+      "reverse": true,
+      "likert_scale": {
+        "min": 1,
+        "max": 5,
+        "choices_ja": [
+          "全く当てはまらない",
+          "やや当てはまらない",
+          "どちらでもない",
+          "やや当てはまる",
+          "とても当てはまる"
+        ]
+      }
+    }
+  ]
+}

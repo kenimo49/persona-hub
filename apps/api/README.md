@@ -9,7 +9,7 @@ The persistence and aggregation API for [persona-hub](https://github.com/kenimo4
 | POST | `/personas` | `X-API-Key` | Create a persona with its first signal. Returns `{ persona_id }`. |
 | POST | `/personas/{id}/signals` | `X-API-Key` (with access) **or** `+ Authorization: Bearer <handoff>` | Append a signal from another source service. |
 | GET | `/personas/{id}` | Same as above | Return the persona's signals (and the aggregate placeholder). |
-| GET | `/personas/{id}/aggregate` | Same as above | Aggregated cross-source estimate. Currently a placeholder pending [Issue #7](https://github.com/kenimo49/persona-hub/issues/7). |
+| GET | `/personas/{id}/aggregate` | Same as above | Aggregated cross-source estimate. Surfaces a Big Five (OCEAN) estimate when a `bigfive.v1` signal is present (server re-scores from `answers` when available, otherwise trusts the signal's `result`). |
 | POST | `/personas/{id}/handoff_token` | `X-API-Key` (with access) | Issue a short-lived signed JWT to share access with another source service. |
 | GET | `/health` | none | Liveness probe. |
 
@@ -94,8 +94,9 @@ For SQLite-based local development the FastAPI lifespan handler also calls `Base
 
 ## Out of scope for this MVP
 
-- **Server-side re-evaluation of `answers`.** The endpoints accept and store raw `answers` for later use, but do not currently re-run `@persona-hub/core` to verify the client-supplied result. See ARCHITECTURE.md → *Optional server-side re-evaluation*.
-- **Aggregation engine.** `GET /aggregate` returns `placeholder: true` until [Issue #7](https://github.com/kenimo49/persona-hub/issues/7) ports the 5-framework scoring logic from the legacy persona-manager.
+- **Cross-domain aggregation.** Mapping domain signals (e.g. fragrance `citrus`, PC `minimal-silent`) to Big Five / MBTI estimates is not yet implemented. Today only an existing `bigfive.v1` signal contributes to `big_five_estimate`.
+- **Frameworks beyond Big Five.** MBTI, DiSC, Enneagram, and StrengthsFinder scoring lives in the maintainer's private persona-manager but is held back from this OSS repo until the question items are redesigned for unambiguous OSS licensing.
+- **Server-side re-evaluation of arbitrary profiles.** Re-scoring at `/aggregate` only applies to `bigfive.v1`; other framework profiles trust the client-supplied `result`.
 - **Scoped handoff tokens.** All tokens currently grant read+write. Read-only variants are deferred.
 
 ## License
