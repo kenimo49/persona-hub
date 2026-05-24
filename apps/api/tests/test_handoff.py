@@ -9,16 +9,11 @@ from sqlalchemy.orm import Session
 from app.config import get_settings
 from app.models import HandoffJti
 
-from .conftest import fragrance_payload, pc_payload
-
-
-def _create(client: TestClient, key: str) -> str:
-    res = client.post("/personas", json=fragrance_payload(), headers={"X-API-Key": key})
-    return str(res.json()["persona_id"])
+from .conftest import create_persona, pc_payload
 
 
 def test_issue_handoff_token(client: TestClient, kaoriq_key: str) -> None:
-    persona_id = _create(client, kaoriq_key)
+    persona_id = create_persona(client, kaoriq_key)
     res = client.post(
         f"/personas/{persona_id}/handoff_token",
         headers={"X-API-Key": kaoriq_key},
@@ -33,7 +28,7 @@ def test_issue_handoff_token(client: TestClient, kaoriq_key: str) -> None:
 def test_handoff_token_required_caller_has_access(
     client: TestClient, kaoriq_key: str, mypcrig_key: str
 ) -> None:
-    persona_id = _create(client, kaoriq_key)
+    persona_id = create_persona(client, kaoriq_key)
     res = client.post(
         f"/personas/{persona_id}/handoff_token",
         headers={"X-API-Key": mypcrig_key},
@@ -44,7 +39,7 @@ def test_handoff_token_required_caller_has_access(
 def test_handoff_token_grants_cross_source_write(
     client: TestClient, kaoriq_key: str, mypcrig_key: str
 ) -> None:
-    persona_id = _create(client, kaoriq_key)
+    persona_id = create_persona(client, kaoriq_key)
     token = client.post(
         f"/personas/{persona_id}/handoff_token",
         headers={"X-API-Key": kaoriq_key},
@@ -85,7 +80,7 @@ def test_handoff_token_single_use_concurrent_consume(
     )
     db_session.commit()
 
-    persona_id = _create(client, kaoriq_key)
+    persona_id = create_persona(client, kaoriq_key)
     token = client.post(
         f"/personas/{persona_id}/handoff_token",
         headers={"X-API-Key": kaoriq_key},
@@ -111,8 +106,8 @@ def test_handoff_token_single_use_concurrent_consume(
 def test_handoff_token_rejects_bad_subject(
     client: TestClient, kaoriq_key: str, mypcrig_key: str
 ) -> None:
-    persona_id_a = _create(client, kaoriq_key)
-    persona_id_b = _create(client, kaoriq_key)
+    persona_id_a = create_persona(client, kaoriq_key)
+    persona_id_b = create_persona(client, kaoriq_key)
     token = client.post(
         f"/personas/{persona_id_a}/handoff_token",
         headers={"X-API-Key": kaoriq_key},
@@ -129,7 +124,7 @@ def test_handoff_token_rejects_bad_subject(
 def test_handoff_token_rejects_expired(
     client: TestClient, kaoriq_key: str, mypcrig_key: str
 ) -> None:
-    persona_id = _create(client, kaoriq_key)
+    persona_id = create_persona(client, kaoriq_key)
     settings = get_settings()
     now = datetime.now(UTC)
     expired = jwt.encode(
@@ -156,7 +151,7 @@ def test_handoff_token_rejects_unknown_jti(
     client: TestClient, kaoriq_key: str, mypcrig_key: str
 ) -> None:
     """Valid signature but jti was never issued (server has no record)."""
-    persona_id = _create(client, kaoriq_key)
+    persona_id = create_persona(client, kaoriq_key)
     settings = get_settings()
     now = datetime.now(UTC)
     fabricated = jwt.encode(
@@ -183,7 +178,7 @@ def test_handoff_token_rejects_issuer_mismatch(
     client: TestClient, kaoriq_key: str, mypcrig_key: str, db_session: Session
 ) -> None:
     """A signed token whose iss_key disagrees with the stored issuer is rejected."""
-    persona_id = _create(client, kaoriq_key)
+    persona_id = create_persona(client, kaoriq_key)
     # Issue a real token so the jti row exists.
     real_token = client.post(
         f"/personas/{persona_id}/handoff_token",
@@ -218,7 +213,7 @@ def test_handoff_token_rejects_issuer_mismatch(
 def test_handoff_token_rejects_malformed_authorization(
     client: TestClient, kaoriq_key: str, mypcrig_key: str
 ) -> None:
-    persona_id = _create(client, kaoriq_key)
+    persona_id = create_persona(client, kaoriq_key)
     res = client.get(
         f"/personas/{persona_id}",
         headers={"X-API-Key": mypcrig_key, "Authorization": "Bearer "},
@@ -229,7 +224,7 @@ def test_handoff_token_rejects_malformed_authorization(
 def test_handoff_token_rejects_invalid_signature(
     client: TestClient, kaoriq_key: str, mypcrig_key: str
 ) -> None:
-    persona_id = _create(client, kaoriq_key)
+    persona_id = create_persona(client, kaoriq_key)
     res = client.get(
         f"/personas/{persona_id}",
         headers={"X-API-Key": mypcrig_key, "Authorization": "Bearer not-a-real-jwt"},
@@ -241,7 +236,7 @@ def test_handoff_token_rejects_invalid_signature(
 def test_handoff_jti_recorded_in_db(
     client: TestClient, kaoriq_key: str, db_session: Session
 ) -> None:
-    persona_id = _create(client, kaoriq_key)
+    persona_id = create_persona(client, kaoriq_key)
     body = client.post(
         f"/personas/{persona_id}/handoff_token",
         headers={"X-API-Key": kaoriq_key},

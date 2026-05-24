@@ -136,3 +136,45 @@ def pc_payload(source: str = "mypcrig") -> dict[str, object]:
         "scoring_version": "core-0.1.0",
         "result": {"type": "minimal-silent", "scores": {"minimal-silent": 0.8}},
     }
+
+
+def bigfive_payload(
+    source: str = "kaoriq",
+    *,
+    with_answers: bool = False,
+) -> dict[str, object]:
+    """Build a bigfive.v1 signal payload for tests.
+
+    When ``with_answers=True`` includes four high-openness Likert answers so a
+    server-side re-score yields openness=100. Useful for testing the integrity
+    path in ``GET /aggregate``.
+    """
+    payload: dict[str, object] = {
+        "source": source,
+        "profile_id": "bigfive.v1",
+        "profile_version": "1.0.0",
+        "scoring_version": "bigfive-0.1.0",
+        "result": {
+            "openness": 80,
+            "conscientiousness": 70,
+            "extraversion": 60,
+            "agreeableness": 65,
+            "neuroticism": 30,
+        },
+    }
+    if with_answers:
+        payload["answers"] = {"bf_q01": 5, "bf_q02": 5, "bf_q03": 5, "bf_q04": 5}
+    return payload
+
+
+def create_persona(
+    client: TestClient, key: str, *, payload: dict[str, object] | None = None
+) -> str:
+    """Shortcut: POST /personas and return the new persona_id.
+
+    Defaults to a kaoriq fragrance payload — most cross-source tests just need
+    a persona to exist before exercising the path under test.
+    """
+    body = payload if payload is not None else fragrance_payload()
+    res = client.post("/personas", json=body, headers={"X-API-Key": key})
+    return str(res.json()["persona_id"])

@@ -138,6 +138,60 @@ describe('evaluate — spec validation', () => {
     expect(() => evaluate({ q1: 'a' }, bad)).toThrow(/weight/)
   })
 
+  it('rejects duplicate type ids', () => {
+    const bad: ProfileSpec = {
+      ...SIMPLE_SPEC,
+      types: [
+        { id: 'red', name: 'Red' },
+        { id: 'red', name: 'Red Again' },
+      ],
+    }
+    expect(() => evaluate({ q1: 'a', q2: 'a' }, bad)).toThrow(/duplicate type id "red"/)
+  })
+
+  it('rejects duplicate question ids', () => {
+    const bad: ProfileSpec = {
+      ...SIMPLE_SPEC,
+      questions: [
+        {
+          id: 'q1',
+          prompt: 'first',
+          options: [{ id: 'a', label: 'A', weights: { red: 1, blue: 0, green: 0 } }],
+        },
+        {
+          id: 'q1',
+          prompt: 'duplicate',
+          options: [{ id: 'a', label: 'A', weights: { red: 0, blue: 1, green: 0 } }],
+        },
+      ],
+    }
+    expect(() => evaluate({ q1: 'a' }, bad)).toThrow(/duplicate question id "q1"/)
+  })
+
+  it('rejects duplicate option ids within a question', () => {
+    const bad: ProfileSpec = {
+      ...SIMPLE_SPEC,
+      questions: [
+        {
+          id: 'q1',
+          prompt: 'p',
+          options: [
+            { id: 'a', label: 'A', weights: { red: 2, blue: 0, green: 0 } },
+            { id: 'a', label: 'A duplicated', weights: { red: 0, blue: 2, green: 0 } },
+          ],
+        },
+        {
+          id: 'q2',
+          prompt: 'p',
+          options: [{ id: 'a', label: 'A', weights: { red: 1, blue: 0, green: 0 } }],
+        },
+      ],
+    }
+    expect(() => evaluate({ q1: 'a', q2: 'a' }, bad)).toThrow(
+      /duplicate option id "a" in question "q1"/
+    )
+  })
+
   it('rejects weights that reference an unknown type', () => {
     const bad: ProfileSpec = {
       ...SIMPLE_SPEC,
@@ -155,11 +209,19 @@ describe('evaluate — spec validation', () => {
 
 describe('evaluate — answer errors', () => {
   it('throws when an answer is missing for a question', () => {
-    expect(() => evaluate({ q1: 'a' }, SIMPLE_SPEC)).toThrow(/Missing answer.*"q2"/)
+    expect(() => evaluate({ q1: 'a' }, SIMPLE_SPEC)).toThrow(/Missing answers.*q2/)
+  })
+
+  it('lists the expected question ids in the missing-answer error', () => {
+    expect(() => evaluate({}, SIMPLE_SPEC)).toThrow(/Expected one entry per question id: q1, q2/)
   })
 
   it('throws when an answer references an option that does not exist', () => {
     expect(() => evaluate({ q1: 'z', q2: 'a' }, SIMPLE_SPEC)).toThrow(/Unknown option "z"/)
+  })
+
+  it('lists the valid option ids in the unknown-option error', () => {
+    expect(() => evaluate({ q1: 'z', q2: 'a' }, SIMPLE_SPEC)).toThrow(/Valid options:.*a.*b/)
   })
 })
 

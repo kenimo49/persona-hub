@@ -4,7 +4,7 @@
 
 > 軽量なペルソナ評価 SDK と最小限の永続化 API。ドメイン特化型の性格診断クイズを、サービス横断で同じペルソナとして扱うための基盤です。
 
-**ステータス**: Pre-alpha — 設計と scaffold は完了、`evaluate()` と API エンドポイントは未実装（[#3](https://github.com/kenimo49/persona-hub/issues/3) / [#5](https://github.com/kenimo49/persona-hub/issues/5)）。本番運用にはまだ使えません。
+**ステータス**: MVP — `@persona-hub/core` の `evaluate()`（[#3](https://github.com/kenimo49/persona-hub/issues/3)）、最初のプロファイルパック `fragrance.v1`（[#4](https://github.com/kenimo49/persona-hub/issues/4)）、永続化 API（[#5](https://github.com/kenimo49/persona-hub/issues/5)）、BigFive 集約エンジン（[#7](https://github.com/kenimo49/persona-hub/issues/7) phase 1）まで merge 済み。Pre-1.0 のため、npm 公開までに API 契約が変わる可能性があります。
 
 ## 動くと、こうなります
 
@@ -19,7 +19,7 @@ const result = evaluate(answers, fragranceProfile)
 // → { type: 'citrus', scores: { citrus: 0.83, woody: 0.41, ... }, confidence: 0.78 }
 ```
 
-これが SDK 側です。API 側は 4 つのエンドポイント（`POST /personas`、`POST /personas/:id/signals`、`GET /personas/:id`、`GET /personas/:id/aggregate`）で、まるごと任意です — API を使わなくてもクイズは動きます。
+これが SDK 側です。API 側は 5 つのエンドポイント（`POST /personas`、`POST /personas/:id/signals`、`GET /personas/:id`、`GET /personas/:id/aggregate`、`POST /personas/:id/handoff_token`）で、まるごと任意です — API を使わなくてもクイズは動きます。
 
 ## なぜ persona-hub が要るのか
 

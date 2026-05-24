@@ -48,7 +48,7 @@ Each pack is independently versionable.
 
 ### API (persistence + aggregation)
 
-4 endpoints, intentionally minimal:
+5 endpoints, intentionally minimal:
 
 ```
 POST /personas
@@ -58,18 +58,25 @@ POST /personas
   Returns: { persona_id }
 
 POST /personas/:id/signals
-  Auth:    API key (source service); must own the persona OR
-           present a valid handoff token for cross-source writes
-  Body:    { source, profile_id, profile_version, scoring_version, result }
+  Auth:    X-API-Key (source service) that already has access, OR
+           X-API-Key + Authorization: Bearer <handoff_token>
+           for the first cross-source write
+  Body:    { source, profile_id, profile_version, scoring_version,
+             result, answers? }
   Returns: { ok: true }
 
 GET /personas/:id
-  Auth:    API key that wrote it OR valid read token
+  Auth:    Same as POST /personas/:id/signals
   Returns: { persona_id, signals[], aggregate? }
 
 GET /personas/:id/aggregate
   Auth:    Same as GET /personas/:id
-  Returns: { big_five_estimate, summary, ... }
+  Returns: { persona_id, big_five_estimate, source_signals[],
+             scoring_version, placeholder }
+
+POST /personas/:id/handoff_token
+  Auth:    X-API-Key with existing persona access
+  Returns: { token, persona_id, expires_in }
 ```
 
 The API does not evaluate by default. It receives evaluated results from clients and stores them. For higher integrity, source services may instead submit raw `answers`, in which case the API re-runs `evaluate()` server-side using the same `@persona-hub/core` SDK (see "Optional server-side re-evaluation" below).
@@ -100,16 +107,21 @@ User clicks "Continue at mypcrig" on the kaoriq result page
   → kaoriq redirects user to https://mypcrig.com/?ph_token=ht_xxx
 
 mypcrig page loads, reads ph_token from URL
-  → mypcrig calls GET /personas/by_token/ht_xxx
-                  → returns { persona_id: "pm_abc123" }
-  → mypcrig stores persona_id in mypcrig.com localStorage
+  → mypcrig knows persona_id = "pm_abc123" from a prior query string,
+    a backend handshake, or by decoding the unsigned JWT body
   → mypcrig calls evaluate() on its own quiz → result.type = "minimal-silent"
-  → mypcrig POSTs as a signal: POST /personas/pm_abc123/signals
+  → mypcrig POSTs as a signal with the token attached:
+        POST /personas/pm_abc123/signals
+        X-API-Key:     <mypcrig key>
+        Authorization: Bearer ht_xxx
+    On success, the API marks the token consumed (single-use) and
+    persists mypcrig's key on the persona's access list, so future
+    requests from mypcrig need only X-API-Key.
   → mypcrig calls GET /personas/pm_abc123/aggregate
        → API responds with cross-domain Big Five estimate
 ```
 
-The handoff token is short-lived (≤5 minutes), single-use, and bound to the originating source. This is the same pattern OAuth uses for cross-origin identity, scoped down to persona linking.
+The handoff token is short-lived (≤5 minutes), single-use, and bound to the originating source. This is the same pattern OAuth uses for cross-origin identity, scoped down to persona linking. There is no separate `GET /personas/by_token/...` step — the token rides on the next real persona request as a Bearer credential.
 
 ### Privacy-first path: recovery code
 

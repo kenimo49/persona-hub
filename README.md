@@ -4,7 +4,7 @@
 
 > Lightweight persona evaluation SDK + thin persistence API. Build domain-specific personality quizzes that share a single persona profile across services.
 
-**Status**: Pre-alpha — design and scaffold complete; `evaluate()` and API endpoints not yet implemented (see [#3](https://github.com/kenimo49/persona-hub/issues/3), [#5](https://github.com/kenimo49/persona-hub/issues/5)). Not ready for production use.
+**Status**: MVP — `@persona-hub/core` `evaluate()` shipped ([#3](https://github.com/kenimo49/persona-hub/issues/3)), first profile pack `fragrance.v1` shipped ([#4](https://github.com/kenimo49/persona-hub/issues/4)), Persistence API shipped ([#5](https://github.com/kenimo49/persona-hub/issues/5)), and the BigFive aggregation engine shipped ([#7](https://github.com/kenimo49/persona-hub/issues/7) phase 1). Pre-1.0: API contracts may still evolve before the first npm publish.
 
 ## What it looks like
 
@@ -19,7 +19,7 @@ const result = evaluate(answers, fragranceProfile)
 // → { type: 'citrus', scores: { citrus: 0.83, woody: 0.41, ... }, confidence: 0.78 }
 ```
 
-That's the SDK side. The API side is four endpoints (`POST /personas`, `POST /personas/:id/signals`, `GET /personas/:id`, `GET /personas/:id/aggregate`) and is entirely optional — your quiz works without it.
+That's the SDK side. The API side is five endpoints (`POST /personas`, `POST /personas/:id/signals`, `GET /personas/:id`, `GET /personas/:id/aggregate`, `POST /personas/:id/handoff_token`) and is entirely optional — your quiz works without it.
 
 ## Why persona-hub
 

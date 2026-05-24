@@ -2,17 +2,12 @@
 
 from fastapi.testclient import TestClient
 
-from .conftest import fragrance_payload, pc_payload
-
-
-def _create(client: TestClient, key: str) -> str:
-    res = client.post("/personas", json=fragrance_payload(), headers={"X-API-Key": key})
-    return str(res.json()["persona_id"])
+from .conftest import create_persona, fragrance_payload, pc_payload
 
 
 def test_creator_can_append_signal(client: TestClient, kaoriq_key: str) -> None:
     """kaoriq can re-record its own profile (a re-quiz) under the same persona."""
-    persona_id = _create(client, kaoriq_key)
+    persona_id = create_persona(client, kaoriq_key)
     res = client.post(
         f"/personas/{persona_id}/signals",
         json=fragrance_payload(),
@@ -28,7 +23,7 @@ def test_creator_can_append_signal(client: TestClient, kaoriq_key: str) -> None:
 def test_other_key_without_token_rejected(
     client: TestClient, kaoriq_key: str, mypcrig_key: str
 ) -> None:
-    persona_id = _create(client, kaoriq_key)
+    persona_id = create_persona(client, kaoriq_key)
     res = client.post(
         f"/personas/{persona_id}/signals",
         json=pc_payload(),
@@ -47,7 +42,7 @@ def test_signal_404_for_missing_persona(client: TestClient, kaoriq_key: str) -> 
 
 
 def test_signal_rejects_source_spoof(client: TestClient, kaoriq_key: str) -> None:
-    persona_id = _create(client, kaoriq_key)
+    persona_id = create_persona(client, kaoriq_key)
     res = client.post(
         f"/personas/{persona_id}/signals",
         json=pc_payload(),  # source='mypcrig' but auth is kaoriq
@@ -60,7 +55,7 @@ def test_signal_rejects_source_spoof(client: TestClient, kaoriq_key: str) -> Non
 def test_signal_whitelist_enforced(
     client: TestClient, kaoriq_key: str, fragrance_only_key: str
 ) -> None:
-    persona_id = _create(client, kaoriq_key)
+    persona_id = create_persona(client, kaoriq_key)
     token_res = client.post(
         f"/personas/{persona_id}/handoff_token",
         headers={"X-API-Key": kaoriq_key},

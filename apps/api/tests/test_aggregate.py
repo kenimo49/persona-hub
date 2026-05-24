@@ -1,30 +1,8 @@
 """Tests for ``GET /personas/:id/aggregate``."""
 
-from typing import Any
-
 from fastapi.testclient import TestClient
 
-from .conftest import fragrance_payload
-
-
-def _bigfive_payload(source: str = "kaoriq", with_answers: bool = False) -> dict[str, Any]:
-    payload: dict[str, Any] = {
-        "source": source,
-        "profile_id": "bigfive.v1",
-        "profile_version": "1.0.0",
-        "scoring_version": "bigfive-0.1.0",
-        "result": {
-            "openness": 80,
-            "conscientiousness": 70,
-            "extraversion": 60,
-            "agreeableness": 65,
-            "neuroticism": 30,
-        },
-    }
-    if with_answers:
-        # Four positive openness items at 5 → openness 100 when re-scored
-        payload["answers"] = {"bf_q01": 5, "bf_q02": 5, "bf_q03": 5, "bf_q04": 5}
-    return payload
+from .conftest import bigfive_payload, fragrance_payload
 
 
 def test_aggregate_returns_placeholder_when_no_bigfive(
@@ -52,7 +30,7 @@ def test_aggregate_surfaces_bigfive_result(
 ) -> None:
     """A bigfive.v1 signal with only ``result`` (no answers) is passed through."""
     persona_id = client.post(
-        "/personas", json=_bigfive_payload(), headers={"X-API-Key": kaoriq_key}
+        "/personas", json=bigfive_payload(), headers={"X-API-Key": kaoriq_key}
     ).json()["persona_id"]
 
     res = client.get(
@@ -79,7 +57,7 @@ def test_aggregate_recomputes_when_answers_present(
     """When answers are stored, the server re-scores for integrity."""
     persona_id = client.post(
         "/personas",
-        json=_bigfive_payload(with_answers=True),
+        json=bigfive_payload(with_answers=True),
         headers={"X-API-Key": kaoriq_key},
     ).json()["persona_id"]
 
@@ -100,11 +78,11 @@ def test_aggregate_picks_latest_bigfive_signal(
 ) -> None:
     """Multiple bigfive signals: the most recent one is used."""
     persona_id = client.post(
-        "/personas", json=_bigfive_payload(), headers={"X-API-Key": kaoriq_key}
+        "/personas", json=bigfive_payload(), headers={"X-API-Key": kaoriq_key}
     ).json()["persona_id"]
 
     # Append a second bigfive signal with a different score
-    second = _bigfive_payload()
+    second = bigfive_payload()
     second["result"] = {
         "openness": 10,
         "conscientiousness": 10,
@@ -129,7 +107,7 @@ def test_aggregate_ignores_bigfive_with_malformed_result(
     client: TestClient, kaoriq_key: str
 ) -> None:
     """A signal with bigfive.v1 profile but non-OCEAN result shape returns placeholder."""
-    bad = _bigfive_payload()
+    bad = bigfive_payload()
     bad["result"] = {"some_other_shape": True}
     persona_id = client.post(
         "/personas", json=bad, headers={"X-API-Key": kaoriq_key}
