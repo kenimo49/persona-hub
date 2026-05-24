@@ -1,0 +1,21 @@
+{
+  "name": "@persona-hub/profiles",
+  "version": "0.0.0",
+  "description": "Profile packs (fragrance, pc, whisky, ...) for @persona-hub/core.",
+  "license": "Apache-2.0",
+  "private": true,
+  "type": "module",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "echo 'no tests yet for profiles'",
+    "typecheck": "echo 'no TS in profiles yet'",
+    "build": "echo 'no build step for profiles'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kenimo49/persona-hub.git",
+    "directory": "packages/profiles"
+  }
+}

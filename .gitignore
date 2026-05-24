@@ -3,6 +3,7 @@ dist/
 build/
 .pnpm-store/
 .turbo/
+*.tsbuildinfo
 
 *.pyc
 __pycache__/

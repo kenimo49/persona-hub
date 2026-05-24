@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ts:
+    name: TypeScript packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Install dependencies
+        # TODO: switch to --frozen-lockfile once pnpm-lock.yaml is committed
+        run: pnpm install --no-frozen-lockfile
+      - name: Type check
+        run: pnpm -r typecheck
+      - name: Test
+        run: pnpm -r test
+
+  python:
+    name: Python API
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: apps/api/.python-version
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+      - name: Lint
+        run: ruff check .
+      - name: Type check
+        run: mypy app
+      - name: Test
+        run: pytest

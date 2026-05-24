@@ -83,6 +83,41 @@ Apache 2.0 です。将来的にはマネージドのホスティングサービ
 - セキュリティ報告: [SECURITY.md](./SECURITY.md) を参照
 - コミュニティ規範: [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) を参照
 
+## 開発手順
+
+TypeScript パッケージと Python API を抱える monorepo 構成です。
+
+```
+persona-hub/
+├── packages/
+│   ├── core/             # @persona-hub/core — 評価 SDK (TypeScript)
+│   └── profiles/         # @persona-hub/profiles — プロファイルパック (JSON)
+└── apps/
+    └── api/              # 永続化 + 集約 API (FastAPI)
+```
+
+### TypeScript パッケージ
+
+Node 20+ と pnpm 9+ が必要です。
+
+```bash
+pnpm install
+pnpm -r typecheck
+pnpm -r test
+```
+
+### Python API
+
+Python 3.12+（uv 推奨）。詳細は [`apps/api/README.md`](./apps/api/README.md) を参照してください。
+
+```bash
+cd apps/api
+uv venv && source .venv/bin/activate
+uv pip install -e ".[dev]"
+pytest
+uvicorn app.main:app --reload
+```
+
 ## ステータスとロードマップ
 
 設計判断は [Issue #1: Architecture](https://github.com/kenimo49/persona-hub/issues/1) に、実装計画はオープン Issue 一覧にあります。

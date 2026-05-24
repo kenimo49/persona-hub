@@ -83,6 +83,41 @@ Apache 2.0. The maintainer may offer a managed hosted service in the future; the
 - Security reports: see [SECURITY.md](./SECURITY.md)
 - Community standards: see [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md)
 
+## Development
+
+This is a monorepo with TypeScript packages and a Python API.
+
+```
+persona-hub/
+├── packages/
+│   ├── core/             # @persona-hub/core — evaluation SDK (TypeScript)
+│   └── profiles/         # @persona-hub/profiles — profile packs (JSON)
+└── apps/
+    └── api/              # persistence + aggregation API (FastAPI)
+```
+
+### TypeScript packages
+
+Requires Node 20+ and pnpm 9+.
+
+```bash
+pnpm install
+pnpm -r typecheck
+pnpm -r test
+```
+
+### Python API
+
+Requires Python 3.12+ (uv recommended). See [`apps/api/README.md`](./apps/api/README.md).
+
+```bash
+cd apps/api
+uv venv && source .venv/bin/activate
+uv pip install -e ".[dev]"
+pytest
+uvicorn app.main:app --reload
+```
+
 ## Status & roadmap
 
 See [Issue #1: Architecture](https://github.com/kenimo49/persona-hub/issues/1) for the design decision, and the open issues list for the implementation plan.

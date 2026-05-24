@@ -1,0 +1,27 @@
+{
+  "name": "persona-hub",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Lightweight persona evaluation SDK + thin persistence API for cross-service personality profiles",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kenimo49/persona-hub.git"
+  },
+  "homepage": "https://github.com/kenimo49/persona-hub",
+  "bugs": {
+    "url": "https://github.com/kenimo49/persona-hub/issues"
+  }
+}
