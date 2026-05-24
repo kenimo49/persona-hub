@@ -8,9 +8,15 @@ This code applies within all project spaces (Issues, Pull Requests, Discussions,
 
 ## Reporting
 
-To report a concern, please use [GitHub's private vulnerability reporting](https://docs.github.com/en/code-security/security-advisories/working-with-repository-security-advisories/about-repository-security-advisories) for security-related issues, or open a private discussion / contact the maintainer directly for community concerns.
+For different concern types, use the matching channel:
 
-All reports will be reviewed and investigated promptly and fairly.
+| Concern type | Channel |
+|--------------|---------|
+| **Security vulnerability** | [GitHub's private vulnerability reporting](https://github.com/kenimo49/persona-hub/security/advisories/new) |
+| **Community concern (private)** | Start a private discussion in [GitHub Discussions → Community](https://github.com/kenimo49/persona-hub/discussions/categories/community) |
+| **Code of Conduct violation** | Either of the above channels; mark the title as "CoC report" |
+
+All reports will be reviewed and investigated promptly and fairly. Maintainers will respect the reporter's privacy and not name them in any public action unless they explicitly request to be named.
 
 ## Enforcement
 

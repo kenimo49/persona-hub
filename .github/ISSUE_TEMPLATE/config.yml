@@ -6,3 +6,6 @@ contact_links:
   - name: Architecture & design discussion
     url: https://github.com/kenimo49/persona-hub/issues/1
     about: For broader architecture or design conversations, comment on the architecture Issue.
+  - name: Community Q&A and ideas
+    url: https://github.com/kenimo49/persona-hub/discussions
+    about: For open-ended questions, ideas, and community conversation, use GitHub Discussions.
